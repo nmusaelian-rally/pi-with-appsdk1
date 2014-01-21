@@ -1,0 +1,63 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!-- Copyright (c) 2010 Rally Software Development Corp. All rights reserved -->
+<html>
+<head>
+   <title>PortfolioItem Table Component Example</title>
+   <meta name="Name" content="App Example: PortfolioItem Table Component Example" />
+   <meta name="Version" content="2010.4" />
+   <meta name="Vendor" content="Rally Lab Nick" />
+   <script type="text/javascript" src="https://rally1.rallydev.com/apps/1.33/sdk.js?apiVersion=1.43"></script>
+   <script type="text/javascript">
+
+     function tableExample() {
+       var rallyDataSource = new rally.sdk.data.RallyDataSource('1011574887','1791266714','false','false');
+       rallyDataSource.setApiVersion("1.40");
+      function itemQuery() {
+         var queryObject = {
+           key: "pi",
+           type: "portfolioitem",
+           fetch: "FormattedID,Name,Description,Project,PortfolioItemTypeName,PlannedEndDate,PlannedStartDate,PercentDoneByStoryPlanEstimate,PercentDoneByStoryCount"
+	   //query: "(PortfolioItemTypeName = feature)"  //per WSAPI doc:  PortfolioItemTypeName cannot be used in the queries. See condition if(results.pi[i]._type == "PortfolioItem/Feature") below that filters out other types from the table
+         };
+         rallyDataSource.findAll(queryObject, populateTable);
+      }
+
+      function populateTable(results) {
+         var rankIx = 1;
+	 var pi_features = new Array();
+	 var features = -1;
+            for (var i=0; i < results.pi.length; i++) {
+		if(results.pi[i]._type == "PortfolioItem/Feature"){
+			features++;
+			pi_features[features] = results.pi[i];
+			
+		}
+            }
+         var tableDiv = document.getElementById('aDiv');
+         var config = { columns:
+             [
+	      {key: 'PortfolioItemTypeName'},
+	     {key: 'FormattedID', header: 'Formatted ID', width: 100},
+             {key: 'Name'},
+	    {key: 'Description'},
+	   {key: 'PercentDoneByStoryCount'},
+	    {key: 'PercentDoneByStoryPlanEstimate'},
+	    {key: 'PlannedStartDate'},
+	    {key: 'PlannedEndDate'},
+            {key: 'Project.Name'}]};
+        var table = new rally.sdk.ui.Table(config);
+	
+         table.addRows(pi_features);
+         table.display(tableDiv);
+
+      };
+      itemQuery();
+     }
+
+     rally.addOnLoad(tableExample);
+   </script>
+</head>
+<body>
+   <div id="aDiv"></div>
+</body>
+</html> 
